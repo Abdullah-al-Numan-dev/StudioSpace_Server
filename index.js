@@ -24,26 +24,25 @@ const client = new MongoClient(process.env.MONGODB_URI, {
   },
 });
 
-let db;
-async function connectDB() {
-  if (db) return db;
-  await client.connect();
-  db = client.db("studiospace");
-  return db;
-}
-
 app.get("/", (req, res) => {
   res.send({ name: "StudioSpace API", status: "running" });
 });
 
-connectDB()
-  .then(() => {
-    console.log("MongoDB connected");
-    app.listen(port, () => console.log(`Server on port ${port}`));
-  })
-  .catch((err) => {
-    console.error("DB connection failed:", err.message);
-    process.exit(1);
+async function run() {
+  await client.connect();
+  const db = client.db("studiospace");
+  console.log("MongoDB connected");
+
+  app.use("/api/studios", require("./routes/studios")(db));
+
+  app.use((req, res) => {
+    res.status(404).send({ message: "Route not found" });
   });
 
-module.exports = { connectDB };
+  app.listen(port, () => console.log(`Server on port ${port}`));
+}
+
+run().catch((err) => {
+  console.error("Startup failed:", err.message);
+  process.exit(1);
+});
