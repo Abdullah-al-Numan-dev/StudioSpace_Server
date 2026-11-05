@@ -35,7 +35,7 @@ async function run() {
 
   app.use("/api/studios", require("./routes/studios")(db));
   app.use("/api/bookings", require("./routes/bookings")(db));
-
+  app.use("/api/wishlist", require("./routes/wishlist")(db));
 
   app.use((req, res) => {
     res.status(404).send({ message: "Route not found" });
