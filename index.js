@@ -34,6 +34,8 @@ async function run() {
   console.log("MongoDB connected");
 
   app.use("/api/studios", require("./routes/studios")(db));
+  app.use("/api/bookings", require("./routes/bookings")(db));
+
 
   app.use((req, res) => {
     res.status(404).send({ message: "Route not found" });
